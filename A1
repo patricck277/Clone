@@ -1,0 +1,34 @@
+import subprocess
+
+DEVICE_IDS = ["5701S00153", "5701S00161"]
+REMOTE_PATH = "/sdcard/tnfsserver/gpsData"
+
+def check_device(device_id: str) -> bool:
+    """Check if the specified device is connected and authorized."""
+    result = subprocess.run(['adb', 'devices'], capture_output=True, text=True)
+    print(f"ADB devices output:\n{result.stdout}")
+    if device_id in result.stdout and "unauthorized" not in result.stdout:
+        return True
+    else:
+        print(f"Device {device_id} is not connected or not authorized.")
+        return False
+
+def delete_files_on_device(device_id: str, remote_path: str) -> None:
+    """Delete all files from the specified remote path on the device."""
+    if check_device(device_id):
+        delete_command = f'adb -s {device_id} shell "rm {remote_path}/*"'
+        result = subprocess.run(delete_command, shell=True, capture_output=True, text=True)
+        if result.returncode == 0:
+            print(f"All files in {remote_path} on device {device_id} have been deleted.")
+        else:
+            print(f"Failed to delete files on device {device_id}: {result.stderr}")
+    else:
+        print(f"Cannot proceed with deletion. Device {device_id} is not ready.")
+
+def main() -> None:
+    for device_id in DEVICE_IDS:
+        print(f"Processing device: {device_id}")
+        delete_files_on_device(device_id, REMOTE_PATH)
+
+if __name__ == "__main__":
+    main()
