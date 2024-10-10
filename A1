@@ -32,3 +32,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+scp whippet@your-whippet-ip:/mnt/user/fusion/rtfs/gpsData/*.t0x /destination/folder/tree
+
